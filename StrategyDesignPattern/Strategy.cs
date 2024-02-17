@@ -4,27 +4,20 @@ namespace StrategyDesignPattern;
 
 public interface IConfigurationStrategy
 {
-    string GetConfigurationData(string key);
+    string? GetConfigurationData(string key);
 }
 
-public class JsonFileConfigurationStrategy : IConfigurationStrategy
+public class JsonFileConfigurationStrategy(IConfiguration configuration) : IConfigurationStrategy
 {
-    private readonly IConfigurationMock _configuration;
-
-    public JsonFileConfigurationStrategy(IConfigurationMock configuration)
+    public string? GetConfigurationData(string key)
     {
-        _configuration = configuration;
-    }
-
-    public string GetConfigurationData(string key)
-    {
-        return _configuration.GetSection(key).Value;
+        return configuration.GetSection(key).Value;
     }
 }
 
 public class EnvironmentConfigurationStrategy : IConfigurationStrategy
 {
-    public string GetConfigurationData(string key)
+    public string? GetConfigurationData(string key)
     {
         return Environment.GetEnvironmentVariable(key);
     }
@@ -32,14 +25,14 @@ public class EnvironmentConfigurationStrategy : IConfigurationStrategy
 
 public interface IConfigurationStrategyContext
 {
-    string GetConfigurationData(string key);
+    string? GetConfigurationData(string key);
 }
 
 public class ConfigurationStrategyContext : IConfigurationStrategyContext
 {
-    private IConfigurationStrategy _strategy;
+    private readonly IConfigurationStrategy _strategy;
 
-    public ConfigurationStrategyContext(IConfigurationMock configuration)
+    public ConfigurationStrategyContext(IConfiguration configuration)
     {
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
         {
@@ -51,7 +44,7 @@ public class ConfigurationStrategyContext : IConfigurationStrategyContext
         }
     }
 
-    public string GetConfigurationData(string key)
+    public string? GetConfigurationData(string key)
     {
         return _strategy.GetConfigurationData(key);
     }
